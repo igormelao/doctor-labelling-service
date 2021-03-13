@@ -14,7 +14,7 @@ public class CaseDto {
 	private UserDto doctor;
 	private List<LabelDto> labels;
 	private String electronicHealthRecord;
-	private LocalDateTime timeLabelling;
+	private Long timeLabelling;
 	private LocalDateTime dateCreate;
 
 	public CaseDto() {
@@ -27,25 +27,24 @@ public class CaseDto {
 		if (caseDoctor.getDoctor() != null)
 			this.doctor = new UserDto(caseDoctor.getDoctor());
 
-		if (caseDoctor.getLabels() != null)
-		{
+		if (caseDoctor.getLabels() != null) {
 			List<String> labelsIds = caseDoctor.getLabels();
 			List<Label> labels = new ArrayList<Label>();
-			
-			//TODO: Create a new resource Label to get all labels by id
+
+			// TODO: Create a new resource Label to get all labels by id
 			// making only one call instead of many
 			labelsIds.forEach(idLabel -> {
 				Label label = labelProxy.retrieveLabel(idLabel);
 
-				if(label != null)
+				if (label != null)
 					labels.add(label);
 			});
-			
+
 			this.labels = LabelDto.convert(labels);
 		}
 
 		this.electronicHealthRecord = caseDoctor.getElectronicHealthRecord();
-		this.timeLabelling = caseDoctor.getTimeToLabel();
+		this.timeLabelling = caseDoctor.getTimeInMinutesToLabel();
 		this.dateCreate = caseDoctor.getDateCreate();
 	}
 
@@ -81,24 +80,24 @@ public class CaseDto {
 		this.electronicHealthRecord = electronicHealthRecord;
 	}
 
-	public LocalDateTime getTimeLabelling() {
+	public Long getTimeLabelling() {
 		return timeLabelling;
 	}
 
-	public void setTimeLabelling(LocalDateTime timeLabelling) {
+	public void setTimeLabelling(Long timeLabelling) {
 		this.timeLabelling = timeLabelling;
 	}
 
 	public static List<CaseDto> convert(List<Case> cases, LabelProxy labelProxy) {
-		List<CaseDto> casesDtos= new ArrayList<CaseDto>();
-		
+		List<CaseDto> casesDtos = new ArrayList<CaseDto>();
+
 		cases.stream().forEach(doctorCase -> {
 			CaseDto caseDto = new CaseDto(doctorCase, labelProxy);
 
-			if(caseDto != null)
+			if (caseDto != null)
 				casesDtos.add(caseDto);
 		});
-		
+
 		return casesDtos;
 	}
 

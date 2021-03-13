@@ -7,6 +7,8 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,22 +35,26 @@ public class Case {
 	@Column(columnDefinition = "TEXT")
 	private String electronicHealthRecord;
 
-	private LocalDateTime timeToLabel;
+	private Long timeInMinutesToLabel;
 
 	private LocalDateTime dateCreate = LocalDateTime.now();
+
+	@Enumerated(EnumType.STRING)
+	private StateCase state = StateCase.NOT_LABELLED;
 
 	public Case() {
 	}
 
-	public Case(Long id, User doctor, List<String> labels, String electronicHealthRecord, LocalDateTime timeToLabel,
-			LocalDateTime dateCreate) {
+	public Case(Long id, User doctor, List<String> labels, String electronicHealthRecord, Long timeInMinutesToLabel,
+			LocalDateTime dateCreate, StateCase state) {
 		super();
 		this.id = id;
 		this.doctor = doctor;
 		this.labels = labels;
 		this.electronicHealthRecord = electronicHealthRecord;
-		this.timeToLabel = timeToLabel;
+		this.timeInMinutesToLabel = timeInMinutesToLabel;
 		this.dateCreate = dateCreate;
+		this.state = state;
 	}
 
 	public Case(String electronicHealthRecord) {
@@ -87,12 +93,12 @@ public class Case {
 		this.electronicHealthRecord = electronicHealthRecord;
 	}
 
-	public LocalDateTime getTimeToLabel() {
-		return timeToLabel;
+	public Long getTimeInMinutesToLabel() {
+		return timeInMinutesToLabel;
 	}
 
-	public void setTimeToLabel(LocalDateTime timeToLabel) {
-		this.timeToLabel = timeToLabel;
+	public void setTimeInMinutesToLabel(Long timeInMinutesToLabel) {
+		this.timeInMinutesToLabel = timeInMinutesToLabel;
 	}
 
 	public LocalDateTime getDateCreate() {
@@ -101,6 +107,14 @@ public class Case {
 
 	public void setDateCreate(LocalDateTime dateCreate) {
 		this.dateCreate = dateCreate;
+	}
+
+	public StateCase getState() {
+		return state;
+	}
+
+	public void setState(StateCase state) {
+		this.state = state;
 	}
 
 	@Override
@@ -112,7 +126,8 @@ public class Case {
 		result = prime * result + ((electronicHealthRecord == null) ? 0 : electronicHealthRecord.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((labels == null) ? 0 : labels.hashCode());
-		result = prime * result + ((timeToLabel == null) ? 0 : timeToLabel.hashCode());
+		result = prime * result + ((state == null) ? 0 : state.hashCode());
+		result = prime * result + ((timeInMinutesToLabel == null) ? 0 : timeInMinutesToLabel.hashCode());
 		return result;
 	}
 
@@ -150,10 +165,12 @@ public class Case {
 				return false;
 		} else if (!labels.equals(other.labels))
 			return false;
-		if (timeToLabel == null) {
-			if (other.timeToLabel != null)
+		if (state != other.state)
+			return false;
+		if (timeInMinutesToLabel == null) {
+			if (other.timeInMinutesToLabel != null)
 				return false;
-		} else if (!timeToLabel.equals(other.timeToLabel))
+		} else if (!timeInMinutesToLabel.equals(other.timeInMinutesToLabel))
 			return false;
 		return true;
 	}
@@ -161,7 +178,8 @@ public class Case {
 	@Override
 	public String toString() {
 		return "Case [id=" + id + ", doctor=" + doctor + ", labels=" + labels + ", electronicHealthRecord="
-				+ electronicHealthRecord + ", timeToLabel=" + timeToLabel + ", dateCreate=" + dateCreate + "]";
+				+ electronicHealthRecord + ", timeInMinutesToLabel=" + timeInMinutesToLabel + ", dateCreate="
+				+ dateCreate + ", state=" + state + "]";
 	}
 
 }

@@ -8,10 +8,8 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +25,7 @@ import com.doctorlabel.controller.form.CaseForm;
 import com.doctorlabel.controller.form.CreateLabelCaseForm;
 import com.doctorlabel.controller.form.UpdateCaseForm;
 import com.doctorlabel.model.Case;
+import com.doctorlabel.model.User;
 import com.doctorlabel.repository.CaseRepository;
 import com.doctorlabel.repository.UserRepository;
 import com.doctorlabel.service.LabelProxy;
@@ -52,11 +51,11 @@ public class CasesController {
 	
 	@GetMapping("/nextCase")
 	public ResponseEntity<CaseDto> getNextCase(){
-		PageRequest orderByDateCreate = PageRequest.of(0, 1, Sort.by(Sort.Direction.ASC, "dateCreate"));
+		User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Optional<Case> doctorCase = caseRepository.getNextCase(user.getId());
 		
-		Page<Case> doctorCase = caseRepository.getNextCase(orderByDateCreate);
 		if(!doctorCase.isEmpty()) {
-			return ResponseEntity.ok(new CaseDto(doctorCase.getContent().get(0), labelProxy));
+			return ResponseEntity.ok(new CaseDto(doctorCase.get(), labelProxy));
 		}
 		
 		return ResponseEntity.notFound().build();
@@ -111,6 +110,19 @@ public class CasesController {
 		Optional<Case> optionalCase = caseRepository.findById(id);
 		if (optionalCase.isPresent()) {
 			Case doctorCase = form.updateCase(id, caseRepository);
+			return ResponseEntity.ok(new CaseDto(doctorCase, labelProxy));
+		}
+
+		return ResponseEntity.notFound().build();
+
+	}
+	
+	@PutMapping("/{id}/close")
+	@Transactional
+	public ResponseEntity<CaseDto> closeCase(@PathVariable Long id) {
+		Optional<Case> optionalCase = caseRepository.findById(id);
+		if (optionalCase.isPresent()) {
+			Case doctorCase = CloseCaseForm.closeCase(id, caseRepository);
 			return ResponseEntity.ok(new CaseDto(doctorCase, labelProxy));
 		}
 

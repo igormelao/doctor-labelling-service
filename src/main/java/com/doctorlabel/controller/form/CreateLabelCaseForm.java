@@ -6,6 +6,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.doctorlabel.model.Case;
+import com.doctorlabel.model.StateCase;
 import com.doctorlabel.model.User;
 import com.doctorlabel.repository.CaseRepository;
 import com.doctorlabel.repository.UserRepository;
@@ -39,6 +40,8 @@ public class CreateLabelCaseForm {
 		
 		if(doctor != null)
 			doctorCase.setDoctor(doctor);
+		
+		doctorCase.setState(StateCase.LABELLED);
 
 		return doctorCase;
 	}
