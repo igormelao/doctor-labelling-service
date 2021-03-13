@@ -29,6 +29,7 @@ import com.doctorlabel.controller.form.UpdateCaseForm;
 import com.doctorlabel.model.Case;
 import com.doctorlabel.repository.CaseRepository;
 import com.doctorlabel.repository.UserRepository;
+import com.doctorlabel.service.LabelProxy;
 
 @RestController
 @RequestMapping("/cases")
@@ -40,10 +41,13 @@ public class CasesController {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private LabelProxy labelProxy;
+
 	@GetMapping
 	public List<CaseDto> listAll() {
 		List<Case> cases = caseRepository.findAll();
-		return CaseDto.convert(cases);
+		return CaseDto.convert(cases, labelProxy);
 	}
 	
 	@GetMapping("/nextCase")
@@ -52,7 +56,7 @@ public class CasesController {
 		
 		Page<Case> doctorCase = caseRepository.getNextCase(orderByDateCreate);
 		if(!doctorCase.isEmpty()) {
-			return ResponseEntity.ok(new CaseDto(doctorCase.getContent().get(0)));
+			return ResponseEntity.ok(new CaseDto(doctorCase.getContent().get(0), labelProxy));
 		}
 		
 		return ResponseEntity.notFound().build();
@@ -62,7 +66,7 @@ public class CasesController {
 	public ResponseEntity<CaseDto> findBy(@PathVariable Long id) {
 		Optional<Case> optionalCase = caseRepository.findById(id);
 		if (optionalCase.isPresent()) {
-			return ResponseEntity.ok(new CaseDto(optionalCase.get()));
+			return ResponseEntity.ok(new CaseDto(optionalCase.get(), labelProxy));
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -72,7 +76,7 @@ public class CasesController {
 		List<Case> cases = caseRepository.findAllByLabel(labelId);
 
 		if (!cases.isEmpty()) {
-			return ResponseEntity.ok(CaseDto.convert(cases));
+			return ResponseEntity.ok(CaseDto.convert(cases, labelProxy));
 		}
 
 		return ResponseEntity.notFound().build();
@@ -85,7 +89,7 @@ public class CasesController {
 		caseRepository.save(doctorCase);
 
 		URI uri = uriBuilder.path("/cases/{id}").buildAndExpand(doctorCase.getId()).toUri();
-		return ResponseEntity.created(uri).body(new CaseDto(doctorCase));
+		return ResponseEntity.created(uri).body(new CaseDto(doctorCase, labelProxy));
 	}
 
 	@PostMapping("/{id}/label")
@@ -95,7 +99,7 @@ public class CasesController {
 		Optional<Case> optionalCase = caseRepository.findById(id);
 		if (optionalCase.isPresent()) {
 			Case doctorCase = form.insertLabel(id, caseRepository, userRepository);
-			return ResponseEntity.ok(new CaseDto(doctorCase));
+			return ResponseEntity.ok(new CaseDto(doctorCase, labelProxy));
 		}
 
 		return ResponseEntity.notFound().build();
@@ -107,7 +111,7 @@ public class CasesController {
 		Optional<Case> optionalCase = caseRepository.findById(id);
 		if (optionalCase.isPresent()) {
 			Case doctorCase = form.updateCase(id, caseRepository);
-			return ResponseEntity.ok(new CaseDto(doctorCase));
+			return ResponseEntity.ok(new CaseDto(doctorCase, labelProxy));
 		}
 
 		return ResponseEntity.notFound().build();

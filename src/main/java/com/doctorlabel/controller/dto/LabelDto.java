@@ -3,15 +3,19 @@ package com.doctorlabel.controller.dto;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.doctorlabel.model.Label;
+
 public class LabelDto {
 
 	private String id;
+	private String description;
 
 	public LabelDto() {
 	}
 
-	public LabelDto(String id) {
-		this.id = id;
+	public LabelDto(Label label) {
+		this.id = label.getId();
+		this.description = label.getDescription();
 	}
 
 	public String getId() {
@@ -22,38 +26,16 @@ public class LabelDto {
 		this.id = id;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
+	public String getDescription() {
+		return description;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		LabelDto other = (LabelDto) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
-	@Override
-	public String toString() {
-		return "LabelDto [id=" + id + "]";
-	}
-
-	public static List<LabelDto> convert(List<String> labelsIds) {
-		return labelsIds.stream().map(LabelDto::new).collect(Collectors.toList());
+	public static List<LabelDto> convert(List<Label> labels) {
+		return labels.stream().map(LabelDto::new).collect(Collectors.toList());
 	}
 
 }
