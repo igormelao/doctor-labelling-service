@@ -9,10 +9,11 @@ import com.doctorlabel.model.Case;
 public class CaseDto {
 
 	private Long caseId;
-	private DoctorDto doctor;
+	private UserDto doctor;
 	private List<LabelDto> labels;
 	private String electronicHealthRecord;
 	private LocalDateTime timeLabelling;
+	private LocalDateTime dateCreate;
 
 	public CaseDto() {
 
@@ -22,13 +23,14 @@ public class CaseDto {
 		this.caseId = caseDoctor.getId();
 
 		if (caseDoctor.getDoctor() != null)
-			this.doctor = new DoctorDto(caseDoctor.getDoctor());
-		
+			this.doctor = new UserDto(caseDoctor.getDoctor());
+
 		if (caseDoctor.getLabels() != null)
 			this.labels = LabelDto.convert(caseDoctor.getLabels());
-		
+
 		this.electronicHealthRecord = caseDoctor.getElectronicHealthRecord();
 		this.timeLabelling = caseDoctor.getTimeToLabel();
+		this.dateCreate = caseDoctor.getDateCreate();
 	}
 
 	public Long getCaseId() {
@@ -39,11 +41,11 @@ public class CaseDto {
 		this.caseId = caseId;
 	}
 
-	public DoctorDto getDoctor() {
+	public UserDto getDoctor() {
 		return doctor;
 	}
 
-	public void setDoctor(DoctorDto doctor) {
+	public void setDoctor(UserDto doctor) {
 		this.doctor = doctor;
 	}
 
@@ -73,6 +75,14 @@ public class CaseDto {
 
 	public static List<CaseDto> convert(List<Case> cases) {
 		return cases.stream().map(CaseDto::new).collect(Collectors.toList());
+	}
+
+	public LocalDateTime getDateCreate() {
+		return dateCreate;
+	}
+
+	public void setDateCreate(LocalDateTime dateCreate) {
+		this.dateCreate = dateCreate;
 	}
 
 }

@@ -23,7 +23,7 @@ public class Case {
 	private Long id;
 
 	@ManyToOne
-	private Doctor doctor;
+	private User doctor;
 
 	@ElementCollection
 	@CollectionTable(name = "cases_label", joinColumns = @JoinColumn(name = "case_id"))
@@ -35,15 +35,20 @@ public class Case {
 
 	private LocalDateTime timeToLabel;
 
+	private LocalDateTime dateCreate = LocalDateTime.now();
+
 	public Case() {
 	}
 
-	public Case(Long id, Doctor doctor, List<String> labels, String electronicHealthRecord, LocalDateTime timeToLabel) {
+	public Case(Long id, User doctor, List<String> labels, String electronicHealthRecord, LocalDateTime timeToLabel,
+			LocalDateTime dateCreate) {
+		super();
 		this.id = id;
 		this.doctor = doctor;
 		this.labels = labels;
 		this.electronicHealthRecord = electronicHealthRecord;
 		this.timeToLabel = timeToLabel;
+		this.dateCreate = dateCreate;
 	}
 
 	public Case(String electronicHealthRecord) {
@@ -58,11 +63,11 @@ public class Case {
 		this.id = id;
 	}
 
-	public Doctor getDoctor() {
+	public User getDoctor() {
 		return doctor;
 	}
 
-	public void setDoctor(Doctor doctor) {
+	public void setDoctor(User doctor) {
 		this.doctor = doctor;
 	}
 
@@ -90,10 +95,19 @@ public class Case {
 		this.timeToLabel = timeToLabel;
 	}
 
+	public LocalDateTime getDateCreate() {
+		return dateCreate;
+	}
+
+	public void setDateCreate(LocalDateTime dateCreate) {
+		this.dateCreate = dateCreate;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((dateCreate == null) ? 0 : dateCreate.hashCode());
 		result = prime * result + ((doctor == null) ? 0 : doctor.hashCode());
 		result = prime * result + ((electronicHealthRecord == null) ? 0 : electronicHealthRecord.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -111,6 +125,11 @@ public class Case {
 		if (getClass() != obj.getClass())
 			return false;
 		Case other = (Case) obj;
+		if (dateCreate == null) {
+			if (other.dateCreate != null)
+				return false;
+		} else if (!dateCreate.equals(other.dateCreate))
+			return false;
 		if (doctor == null) {
 			if (other.doctor != null)
 				return false;
@@ -142,7 +161,7 @@ public class Case {
 	@Override
 	public String toString() {
 		return "Case [id=" + id + ", doctor=" + doctor + ", labels=" + labels + ", electronicHealthRecord="
-				+ electronicHealthRecord + ", timeToLabel=" + timeToLabel + "]";
+				+ electronicHealthRecord + ", timeToLabel=" + timeToLabel + ", dateCreate=" + dateCreate + "]";
 	}
 
 }

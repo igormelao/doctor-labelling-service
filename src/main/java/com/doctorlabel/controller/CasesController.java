@@ -8,6 +8,9 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +28,7 @@ import com.doctorlabel.controller.form.CreateLabelCaseForm;
 import com.doctorlabel.controller.form.UpdateCaseForm;
 import com.doctorlabel.model.Case;
 import com.doctorlabel.repository.CaseRepository;
+import com.doctorlabel.repository.UserRepository;
 
 @RestController
 @RequestMapping("/cases")
@@ -32,11 +36,26 @@ public class CasesController {
 
 	@Autowired
 	private CaseRepository caseRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	@GetMapping
 	public List<CaseDto> listAll() {
 		List<Case> cases = caseRepository.findAll();
 		return CaseDto.convert(cases);
+	}
+	
+	@GetMapping("/nextCase")
+	public ResponseEntity<CaseDto> getNextCase(){
+		PageRequest orderByDateCreate = PageRequest.of(0, 1, Sort.by(Sort.Direction.ASC, "dateCreate"));
+		
+		Page<Case> doctorCase = caseRepository.getNextCase(orderByDateCreate);
+		if(!doctorCase.isEmpty()) {
+			return ResponseEntity.ok(new CaseDto(doctorCase.getContent().get(0)));
+		}
+		
+		return ResponseEntity.notFound().build();
 	}
 
 	@GetMapping("/{id}")
@@ -75,7 +94,7 @@ public class CasesController {
 			UriComponentsBuilder uriBuilder) {
 		Optional<Case> optionalCase = caseRepository.findById(id);
 		if (optionalCase.isPresent()) {
-			Case doctorCase = form.insertLabel(id, form, caseRepository);
+			Case doctorCase = form.insertLabel(id, caseRepository, userRepository);
 			return ResponseEntity.ok(new CaseDto(doctorCase));
 		}
 
@@ -87,7 +106,7 @@ public class CasesController {
 	public ResponseEntity<CaseDto> updateCase(@PathVariable Long id, @Valid @RequestBody UpdateCaseForm form) {
 		Optional<Case> optionalCase = caseRepository.findById(id);
 		if (optionalCase.isPresent()) {
-			Case doctorCase = form.updateCase(id, form, caseRepository);
+			Case doctorCase = form.updateCase(id, caseRepository);
 			return ResponseEntity.ok(new CaseDto(doctorCase));
 		}
 

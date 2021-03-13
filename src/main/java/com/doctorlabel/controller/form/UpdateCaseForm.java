@@ -1,6 +1,5 @@
 package com.doctorlabel.controller.form;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -16,17 +15,13 @@ public class UpdateCaseForm {
 	@Length(min = 10)
 	private String electronicHealthRecord;
 
-	public String getElectronicHealthRecord() {
-		return electronicHealthRecord;
-	}
-
 	public void setElectronicHealthRecord(String electronicHealthRecord) {
 		this.electronicHealthRecord = electronicHealthRecord;
 	}
 
-	public Case updateCase(Long id, @Valid UpdateCaseForm form, CaseRepository caseRepository) {
+	public Case updateCase(Long id, CaseRepository caseRepository) {
 		Case doctorCase = caseRepository.getOne(id);
-		doctorCase.setElectronicHealthRecord(form.getElectronicHealthRecord());
+		doctorCase.setElectronicHealthRecord(this.electronicHealthRecord);
 		return doctorCase;
 	}
 
