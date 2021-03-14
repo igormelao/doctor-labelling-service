@@ -40,3 +40,9 @@ http://localhost:8081/auth/
 
 It will return a token and type Bearer. Keep it to send with other requests to access the services
 ```
+``` Accessing the API Document
+ When Back-nd Microservices be runing, you can see all resources for the API through documentation generated automatically by Swagger Project on
+ 
+ # Doctor-Labelling-Services
+  http://localhost:8081/swagger-ui.html#
+```
