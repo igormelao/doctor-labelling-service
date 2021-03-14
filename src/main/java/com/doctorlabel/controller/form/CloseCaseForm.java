@@ -1,4 +1,4 @@
-package com.doctorlabel.controller;
+package com.doctorlabel.controller.form;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
